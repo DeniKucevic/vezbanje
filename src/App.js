@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { getProducs } from "./api/dummy-api/dumy-api";
 
-function App() {
+import "./App.css";
+
+const App = () => {
+  const [data, setData] = useState([]);
+  const [queryString, setQueryString] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
+  useEffect(() => {
+    getProducs().then((res) => setData(res.data));
+  }, []);
+
+  useEffect(() => {
+    if (data.products) {
+      const filtered = data.products.filter((item) =>
+        item.title.toLowerCase().includes(queryString)
+      );
+      console.log(filtered);
+      setFilteredData(filtered);
+    }
+  }, [queryString, data.products]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div style={{ marginTop: "2rem" }}>
+        <input onChange={(e) => setQueryString(e.target.value)}></input>
+        {data.products ? (
+          filteredData.map((item) => <p>{item.title}</p>)
+        ) : (
+          <div>Loading...</div>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
